@@ -319,9 +319,12 @@ class Ques(object):
             elif self.tag == '3ent':
                 if '：' in l2:
                     c = 20
+                    self.jiafen[o].append("冒号")
                 for i in self.qqdict.keys():
                     if i in l2:
                         c = c + self.qqdict[i]
+                        self.jiafen[o].append(i)
+                l2 = l2.replace("，",'')
                 if panduan(self.q,['什么是','是什么','指什么']):
                     kk = self.q.replace("什么",'')
                     kk = kk.replace("是",'')
@@ -334,17 +337,21 @@ class Ques(object):
                     l2 = l2.replace("，",'')
                     try:
                         if len(re.findall(s+"是",l2))>0:                        
-                            c = c + 15   
+                            c = c + 15
+                            self.jiafen[o].append("定义")
                         if len(re.findall(s,l2))>0:                        
-                            c = c + 12                        
+                            c = c + 12         
+                            self.jiafen[o].append("定义")               
                         elif kk+'是' in l2:
                             c = c + 5
+                            self.jiafen[o].append("定义")
                     except:
                         c = c
                 if not self.have_key:
                     for k in self.keyword:
                         if k in l2:
                             c = c + 50
+                            self.jiafen[o].append(k)
             elif self.tag == '2num':
                 l2 = re.sub("\[\d+\]","",l2)
                 l2 = re.sub(" ","",l2)
@@ -457,6 +464,12 @@ class Ques(object):
                     if panduan(self.answerdict[k],['分钟','米','m']):
                         self.score[k] = self.score[k]+self.thum
                         self.jiafen[k].append("同义词")
+        elif self.tag == '3ent':
+            z = [i for i in range(len(self.score)) if self.score[i] >= 30]
+            for kk in self.answerindex:
+                if kk not in z:
+                    win = 0
+                    break
         return win
 def panduan(word,list):
     for i in list:
