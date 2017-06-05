@@ -1,0 +1,316 @@
+import jieba
+import jieba.analyse
+import jieba.posseg as pseg
+import re
+class Ques(object):
+    timeee=['年','月','日','时','分']
+    loceee = ['省','市','县','区','路','道','东','西','左','右']#
+    locz = ['坐落','位于']
+    numz = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '百', '千', '万', '和', '与']
+    def __init__(self):
+        self.q = ''
+        self.answerdict = []
+        self.answerindex = []
+        self.score = []
+        self.tag = ''
+        self.qqdict = {}
+        self.keyword = ''
+        self.keyword2 = ''
+        self.have_key = False
+        self.get_english = False
+    def scoreQ(self):
+        str1c = jieba.analyse.extract_tags(self.q)
+        strl = jieba.lcut(self.q)
+        str1d = pseg.cut(self.q)# 词性
+        lastn = ''
+        lastv = ''
+        flag = 0
+        if self.tag == '5hum':            
+            for i, j in str1d:
+                if i == "《":
+                    flag = 1
+                    continue            
+                if i == "》":
+                    flag = 0
+                if flag == 1 or j == 'uj':
+                    lastn = ''
+                    lastv = ''
+                    continue
+                if j[0] == 'n':
+                    lastn = i
+                if j[0] == 'v' and i!='是':
+                    lastv = i
+            if lastv!='':
+                self.keyword = lastv
+                self.qqdict[lastv] = 40
+            else:
+                #self.keyword = lastn
+                pass
+            self.keyword2 = lastn
+            self.qqdict[lastn] = 100
+            for i in range(len(strl)):
+                if strl[i] not in self.qqdict.keys():
+                    self.qqdict[strl[i]] = 5
+                if strl[i] in str1c:
+                    self.qqdict[strl[i]] = self.qqdict[strl[i]] +2
+        elif self.tag == '1time':
+            for i, j in str1d:
+                if j[0] == 'n':
+                    lastn = i
+                if j[0] == 'v' and i!='是':
+                    lastv = i
+            if lastv!='':
+                self.keyword = lastv                
+                self.qqdict[lastv] = 45
+            else:
+                pass
+            self.qqdict[lastn] = 30
+            for i in range(len(strl)):
+                if strl[i] not in self.qqdict.keys():
+                    self.qqdict[strl[i]] = 10
+                if strl[i] in str1c:
+                    self.qqdict[strl[i]] = self.qqdict[strl[i]] +10
+            
+        elif self.tag == '2num':
+            for i, j in str1d:                
+                if j[0] == 'n' :#and not panduan(i,['址','位置']):
+                    lastn = i
+                if j[0] == 'v' and i!='是':
+                    lastv = i
+            if lastn!='':
+                self.keyword = lastn
+                self.qqdict[lastn] = 45
+            else:
+                pass
+            #self.qqdict[lastv] = 30
+            for i in range(len(strl)):
+                if strl[i] not in self.qqdict.keys():
+                    self.qqdict[strl[i]] = 2
+                if strl[i] in str1c:
+                    self.qqdict[strl[i]] = self.qqdict[strl[i]] +2
+        elif self.tag == '3ent':
+            for i, j in str1d:                
+                if j[0] == 'n' :#and not panduan(i,['址','位置']):
+                    lastn = i
+                if j[0] == 'v' and i!='是':
+                    lastv = i
+            if lastn!='':
+                self.keyword = lastn                
+                self.qqdict[lastn] = 45
+            else:
+                pass            
+            #self.qqdict[lastv] = 30
+            for i in range(len(strl)):
+                if strl[i] not in self.qqdict.keys():
+                    self.qqdict[strl[i]] = 2
+                if strl[i] in str1c:
+                    self.qqdict[strl[i]] = self.qqdict[strl[i]] +2
+        elif self.tag == '4loc':
+            for i, j in str1d:                
+                if j[0] == 'n' :#and not panduan(i,['址','位置']):
+                    lastn = i
+                if j[0] == 'v' and i!='是':
+                    lastv = i
+            if lastn!='':
+                self.keyword = lastn                
+                self.qqdict[lastn] = 45
+            else:
+                pass
+            #self.qqdict[lastv] = 30
+            for i in range(len(strl)):
+                if strl[i] not in self.qqdict.keys():
+                    self.qqdict[strl[i]] = 2
+                if strl[i] in str1c:
+                    self.qqdict[strl[i]] = self.qqdict[strl[i]] +2
+        elif  self.tag == '6des':
+            lastnn = ''
+            for i, j in str1d:                
+                if j[0] == 'n' :#and not panduan(i,['文','语']):
+                    lastnn = lastn
+                    lastn = i
+                if j[0] == 'v' and i!='是':
+                    lastv = i
+            if lastn!='':
+                self.keyword = lastn           
+                self.qqdict[lastn] = 45
+                self.qqdict[lastnn] = 10
+            else:
+                pass
+            if panduan(self.q,['英语','英文','译','拼音','读']):
+                self.get_english=True
+            #self.qqdict[lastv] = 50
+            for i in range(len(strl)):
+                if strl[i] not in self.qqdict.keys():
+                    self.qqdict[strl[i]] = 5
+                if strl[i] in str1c:
+                    self.qqdict[strl[i]] = self.qqdict[strl[i]] +5
+        else:
+            for i, j in str1d:                
+                if j[0] == 'n' :#and not panduan(i,['址','位置']):
+                    lastn = i
+                if j[0] == 'v' and i!='是':
+                    lastv = i
+            if lastn!='':
+                self.keyword = lastn                
+                self.qqdict[lastn] = 45
+            else:
+                pass
+            #self.qqdict[lastv] = 30
+            for i in range(len(strl)):
+                if strl[i] not in self.qqdict.keys():
+                    self.qqdict[strl[i]] = 2
+                if strl[i] in str1c:
+                    self.qqdict[strl[i]] = self.qqdict[strl[i]] +2
+    def read_alla(self):
+        for i in self.answerdict:
+            if self.keyword in i:
+                self.have_key = True
+                break
+    def scoreA(self):        
+        for l2 in self.answerdict:
+            c = 0
+            if self.tag == '5hum':
+                if '：' in l2:
+                    c = 20
+                for i in self.qqdict.keys():
+                    if i in l2:
+                        c = c + self.qqdict[i]
+                #if not self.have_key:
+                for k in self.keyword:
+                    if k in l2 and k not in ['者','人']:
+                        c = c + 50
+                        break
+                for k in self.keyword2:
+                    if k in l2 and k not in ['者','人']:
+                        c = c + 60
+                        break
+            elif self.tag == '1time':
+                for i in self.qqdict.keys():
+                    if i in l2:
+                        c = c + self.qqdict[i]
+                for j in self.timeee:
+                    if j in l2:
+                        c = c + 50
+                        break
+                if not self.have_key:
+                    for k in self.keyword:
+                        if k in l2:
+                            c = c + 50
+            elif self.tag == "4loc":
+                for i in self.qqdict.keys():
+                    if i in l2:
+                        c = c + self.qqdict[i]
+                for j in self.loceee:
+                    if j in l2:
+                        #print(j+" "+l2)
+                        c = c + 60
+                        break
+                for j in self.locz:
+                    if j in l2:
+                        #print(j+" "+l2)
+                        c = c + 60
+                        break
+                if not self.have_key:
+                    for k in self.keyword:
+                        if k in l2:
+                            c = c + 50
+            elif self.tag == '3ent':
+                if '：' in l2:
+                    c = 20
+                for i in self.qqdict.keys():
+                    if i in l2:
+                        c = c + self.qqdict[i]
+                if panduan(self.q,['什么是','是什么','指什么']):
+                    kk = self.q.replace("什么",'')
+                    kk = kk.replace("是",'')
+                    kk = kk.replace("指",'')
+                    kk = kk.replace("？",'')   
+                    kk = kk.replace("定义",'')
+                    kk = kk.replace("的",'')
+                    kk = kk.replace("地","")                 
+                    s = "^"+kk           
+                    l2 = l2.replace("，",'')
+                    try:
+                        if len(re.findall(s+"是",l2))>0:                        
+                            c = c + 15   
+                        if len(re.findall(s,l2))>0:                        
+                            c = c + 12                        
+                        elif kk+'是' in l2:
+                            c = c + 5
+                    except:
+                        c = c
+                if not self.have_key:
+                    for k in self.keyword:
+                        if k in l2:
+                            c = c + 50
+            elif self.tag == '2num':
+                #str1d = pseg.cut(self.q)# 词性
+                #for i,j in str1d:
+                #    if j[0] == 'm' and i not in self.timeee:
+                
+                if len(re.findall('[0-9]',l2))>0 or panduan(l2,self.numz):
+                        c = c + 50
+                        
+                for i in self.qqdict.keys():
+                    if i in l2:
+                        c = c + self.qqdict[i]
+                for j in self.timeee:
+                    if j in l2:
+                        c = c - 50
+                        break
+                if not self.have_key:
+                    for k in self.keyword:
+                        if k in l2:
+                            c = c + 50
+            elif self.tag == '6des':
+                if '：' in l2:
+                    c = 20
+                if self.get_english:
+                    if len(re.findall('[A-z]',l2))>0:
+                        c = c + 20
+                for i in self.qqdict.keys():
+                    if i in l2:
+                        c = c + self.qqdict[i]
+                if not self.have_key:
+                    for k in self.keyword:
+                        if k in l2:
+                            c = c + 50
+            else:
+                if '：' in l2:
+                    c = 20
+                for i in self.qqdict.keys():
+                    if i in l2:
+                        c = c + self.qqdict[i]
+                if not self.have_key:
+                    for k in self.keyword:
+                        if k in l2:
+                            c = c + 50            
+            self.score.append(c)
+
+    def judge(self):        
+        for i,j in enumerate(self.score):
+            if j == max(self.score):          
+                if i not in self.answerindex:
+                    return False
+        return True
+    def rescore(self):
+        win = 1
+        if self.tag == '5hum':
+            z = [i for i in range(len(self.score)) if self.score[i] > 50]
+            for kk in self.answerindex:
+                if kk not in z:
+                    win = 0
+                    break
+            #print(z)
+            for k in z:
+                str1d = pseg.cut(self.answerdict[k])
+                for i,j in str1d:                    
+                    if j == 'nr' or j == 'eng':
+                        self.score[k] = self.score[k]+40
+                        break
+        return win
+def panduan(word,list):
+    for i in list:
+        if i in word:
+            return True
+    return False  
