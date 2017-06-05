@@ -57,8 +57,36 @@ class BOP(object):
                     self.cur.answerindex.append(aindex)    
                 self.cur.answerdict.append(l[2])        
                 aindex = aindex+1
-        self.allq.append(self.cur)
-        self.all_count = all_count
+            self.allq.append(self.cur)
+            self.all_count = all_count
+        if self.answer == 0:
+            flag = 0
+            try:
+                file1 = open(path, 'r')
+                file1.read()
+                file1.seek(0)
+            except:
+                file1 = codecs.open(path, 'r', 'utf8')
+            result = file1.readlines()
+            aindex = 0
+            all_count = 0
+            MAXQ = 100000
+            for line in result:
+                l = line.split("\t")
+                if l[0]!=self.cur.q:
+                    #if all_count>MAXQ:
+                    #    break
+                    all_count = all_count + 1
+                    aindex = 0
+                    self.allq.append(self.cur)
+                    self.cur = Ques()
+                    self.cur.q = l[0]
+                    self.tagdict.append(self.tagq(l[0]))
+                    self.cur.tag = self.tagq(l[0]) 
+                self.cur.answerdict.append(l[1])        
+                aindex = aindex+1
+            self.allq.append(self.cur)
+            self.all_count = all_count
     def write_result(self):
         with open('result.txt', 'w') as file1:
             for i in self.allq:
@@ -78,7 +106,10 @@ class BOP(object):
                     
                     count=count+1
                     with open('tag/'+s+"_tag.txt", 'a') as file3:
-                        file3.write(str(i)+'\t'+self.allq[i].q+'\n')
+                        try:
+                            file3.write(str(i)+'\t'+self.allq[i].q+'\n')
+                        except:
+                            continue
                     with open('tag/'+s+"_tag_full.txt", 'a') as file3:
                         for j in range(len(self.allq[i].answerdict)):
                             try:
@@ -152,14 +183,15 @@ class BOP(object):
 path = "C:/Users/zhongtc/"
 #path = "C:/Users/zhongtc/Documents/bop/"
 #path = "E:/BoP2017_DBQA_dev_train_data/"
-BB = BOP()
-#BB.read_file(path+"BoP2017_DBAQ_dev_train_data/BoP2017-DBQA.train.txt")
+BB = BOP(1)
+#BB.read_file(path+"BoP2017-DBQA.finalData/BoP2017-DBQA.test.txt")
+#BB.read_file(path+"BoP2017_DBAQ_dev_train_data/BoP2017-DBQA.dev.txt")
 #BB.write_tag_file()
-BB.read_file("tag/2num_tag_full.txt")
+BB.read_file("tag/5hum_tag_full.txt")
 #BB.read_file("onlytest.txt")
 #BB.read_file("wrong.txt")
 #BB.read_file("qtag.txt")
 p = BB.judge_all()
-BB.write_result()
+#BB.write_result()
 z = BB.allq[1].score
 print(p)
