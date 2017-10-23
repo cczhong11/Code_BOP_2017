@@ -84,13 +84,11 @@ class Ques(object):
                 self.qqdict[self.keyword] = self.w_humkeyword
            
             if self.keyword2!='':
-                #self.keyword2 = lastn
                 self.qqdict[self.keyword2] = self.w_humkeyword2
             for i in range(len(strl)):
                 if strl[i] not in self.qqdict.keys() and strl[i] not in ['，','？']:
                     self.qqdict[strl[i]] = self.w_commonword
-                #if strl[i] in str1c:
-                #    self.qqdict[strl[i]] = self.qqdict[strl[i]] +
+                
         elif self.tag == '1time':
             vindex = 0
             lastni = 0
@@ -122,7 +120,7 @@ class Ques(object):
                 self.qqdict[self.keyword] = self.w_tkeyword
            
             if self.keyword2!='':
-                #self.keyword2 = lastn
+                
                 self.qqdict[self.keyword2] = self.w_tkeyword2
             for i in range(len(strl)):
                 if strl[i] not in self.qqdict.keys() and strl[i] not in ['，','？']:
@@ -165,7 +163,7 @@ class Ques(object):
                 self.qqdict[self.keyword] = self.w_lkeyword
            
             if self.keyword2!='':
-                #self.keyword2 = lastn
+                
                 self.qqdict[self.keyword2] = self.w_lkeyword2
             for i in range(len(strl)):
                 if strl[i] not in self.qqdict.keys() and strl[i] not in ['，','？']:
@@ -207,7 +205,7 @@ class Ques(object):
                 self.qqdict[self.keyword] = self.w_tkeyword
            
             if self.keyword2!='':
-                #self.keyword2 = lastn
+                
                 self.qqdict[self.keyword2] = self.w_tkeyword2
             for i in range(len(strl)):
                 if strl[i] not in self.qqdict.keys() and strl[i] not in ['，','？']:
@@ -243,7 +241,7 @@ class Ques(object):
                 self.qqdict[self.keyword] = self.w_tkeyword
            
             if self.keyword2!='' :
-                #self.keyword2 = lastn
+                
                 self.qqdict[self.keyword2] = self.w_tkeyword2
             for i in range(len(strl)):
                 if strl[i] not in self.qqdict.keys() and strl[i] not in ['，','？']:
@@ -282,13 +280,13 @@ class Ques(object):
                 self.qqdict[self.keyword] = self.w_tkeyword
            
             if self.keyword2!='' :
-                #self.keyword2 = lastn
+                
                 self.qqdict[self.keyword2] = self.w_tkeyword2
             if lastnn!="":
                 self.qqdict[lastnn] = 10
             if panduan(self.q,['英语','英文','译','拼音','读','写']):
                 self.get_english=True
-            #self.qqdict[lastv] = 50
+            
             for i in range(len(strl)):
                 if strl[i] not in self.qqdict.keys():
                     self.qqdict[strl[i]] = self.w_commonword
@@ -324,7 +322,7 @@ class Ques(object):
                 self.qqdict[self.keyword] = self.w_tkeyword
            
             if self.keyword2!='':
-                #self.keyword2 = lastn
+                
                 self.qqdict[self.keyword2] = self.w_tkeyword2
             for i in range(len(strl)):
                 if strl[i] not in self.qqdict.keys() and strl[i] not in ['，','？']:
@@ -385,10 +383,7 @@ class Ques(object):
                         self.jiafen[o].append(k)
                         ki = l2.index(k)
                         break
-                #if ti*ki != 0:
-                #    if abs(ki-ti)<6:
-                #        c = c + 10*(10-ti+ki)
-                #        self.jiafen[o].append("distance"+str(20-ti+ki))
+                
             elif self.tag == "4loc":
                 for i in self.qqdict.keys():
                     if i in l2:
@@ -396,13 +391,11 @@ class Ques(object):
                         self.jiafen[o].append(i)
                 for j in self.loceee:
                     if j in l2 and not panduan(l2,self.qqdict.keys()):
-                        #print(j+" "+l2)
                         c = c + 60
                         self.jiafen[o].append(j)
                         break
                 for j in self.locz:
                     if j in l2:
-                        #print(j+" "+l2)
                         c = c + 50
                         self.jiafen[o].append(j)
                         break
@@ -584,10 +577,7 @@ class Ques(object):
                 if kk not in z:
                     win = 0
                     break
-            #for k in z:
-            #    if panduan(self.answerdict[k],['地处','位于']):
-            #        self.score[k] = self.score[k]+self.thum
-            #        self.jiafen[k].append("同义词")
+            
         elif self.tag == '6des':
             z = [i for i in range(len(self.score)) if self.score[i] >= 30]
             for kk in self.answerindex:

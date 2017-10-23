@@ -19,8 +19,7 @@ class BOP(object):
         self.allq = []
         self.tagdict=[]
         self.all_count = 0
-        #logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
-        #self.model = models.Word2Vec.load('F:/zip/med250.model.bin')
+        
         self.stopwordset=set()
         # load stopwords set
         with open('chinastopword.txt','r',encoding='utf-8') as sw:
